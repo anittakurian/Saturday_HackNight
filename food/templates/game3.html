@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flappy Bird</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: rgb(0, 0, 0);
+    }
+    #gameCanvas {
+      border: 1px solid #ffffff;
+    }
+    #score {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      color: azure;
+    }
+    #retryBtn, #backBtn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 20px;
+      font-size: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: none;
+    }
+    #backBtn {
+      top: 60%;
+    }
+    #instructions {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+    
+  <canvas id="gameCanvas" width="480" height="320"></canvas>
+  <div id="score">Score: 0<br>High Score: 0</div>
+  <button id="retryBtn" onclick="retry()">Retry</button>
+  <button id="backBtn" onclick="goBack()">Back</button>
+  <div id="instructions">Use spacebar to play!</div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let bird = { x: 50, y: canvas.height / 2, radius: 20, speedY: 0 };
+    let gravity = 0.2;
+    let jump = -5;
+    let pipes = [];
+    let score = 0;
+    let highScore = 0;
+    let gameStarted = false;
+    let gameOver = false;
+
+    function drawBird() {
+      ctx.beginPath();
+      ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
+      ctx.fillStyle = "yellow";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawPipe(x, height) {
+      ctx.beginPath();
+      ctx.rect(x, 0, 50, height);
+      ctx.rect(x, height + 150, 50, canvas.height - height - 150);
+      ctx.fillStyle = "green";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (gameStarted && !gameOver) {
+        bird.speedY += gravity;
+        bird.y += bird.speedY;
+
+        if (bird.y < 0 || bird.y > canvas.height) {
+          endGame();
+        }
+
+        if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 200) {
+          let minHeight = 50;
+          let maxHeight = canvas.height - 300;
+          let height = Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
+          pipes.push({ x: canvas.width, height: height });
+        }
+
+        pipes.forEach(pipe => {
+          drawPipe(pipe.x, pipe.height);
+          pipe.x -= 2;
+
+          if (bird.x + bird.radius > pipe.x && bird.x - bird.radius < pipe.x + 50) {
+            if (bird.y - bird.radius < pipe.height || bird.y + bird.radius > pipe.height + 150) {
+              endGame();
+            }
+          }
+
+          if (pipe.x === bird.x) {
+            score++;
+            if (score > highScore) {
+              highScore = score;
+            }
+            updateScore();
+          }
+        });
+
+        drawBird();
+        requestAnimationFrame(draw);
+      } else if (gameOver) {
+        document.getElementById("retryBtn").style.display = "block";
+        document.getElementById("backBtn").style.display = "block";
+      } else {
+        requestAnimationFrame(draw);
+      }
+    }
+
+    function updateScore() {
+      document.getElementById("score").innerHTML = `Score: ${score}<br>High Score: ${highScore}`;
+    }
+
+    function startGame() {
+      gameStarted = true;
+    }
+
+    function endGame() {
+      gameOver = true;
+    }
+
+    function retry() {
+      bird = { x: 50, y: canvas.height / 2, radius: 20, speedY: 0 };
+      pipes = [];
+      score = 0;
+      gameStarted = false;
+      gameOver = false;
+      updateScore();
+      document.getElementById("retryBtn").style.display = "none";
+      document.getElementById("backBtn").style.display = "none";
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.code === "Space") {
+        if (!gameStarted) {
+          startGame();
+          draw();
+        } else if (!gameOver) {
+          bird.speedY = jump;
+        }
+      }
+    });
+
+    updateScore();
+  </script>
+  
+</body>
+</html>

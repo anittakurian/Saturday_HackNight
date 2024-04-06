@@ -9,9 +9,9 @@ COOLGAMES
  This project is a collection of entertaining mini-games designed to provide users with a fun and engaging online experience.Developed using a combination of Django, HTML, CSS and JavaScript this website offers a diverse selection of games suitable for all ages. The website boasts a clean and intuitive interface, making it easy for users to navigate and enjoy the games without any hassle.With a variety of mini-games available, users can choose from a range of options to suit their preferences. Whether it's tapping games, puzzles, or memory challenges, there's something for everyone.The project is built on Django, a high-level Python web framework known for its scalability and robustness, ensuring smooth performance even as the user base grows. Upon accessing the website, users are greeted with a selection of games displayed on the homepage. They can choose a game by clicking on its respective link. Each game operates independently, featuring its own unique mechanics and challenges.
 
 ## Team members
-1. [anittakurian](https://github.com/TH-Activities/saturday-hack-night-template)
-2. [Keerthana22gh](https://github.com/TH-Activities/saturday-hack-night-template)
-3. [ogfourtwo](https://github.com/TH-Activities/saturday-hack-night-template)
+1. [Anitta Kurian](https://github.com/TH-Activities/saturday-hack-night-template)
+2. [Keerthana Dhanish](https://github.com/TH-Activities/saturday-hack-night-template)
+3. [Sravan Chand](https://github.com/TH-Activities/saturday-hack-night-template)
    
 ## Link to product walkthrough
 [link to video](Link Here)

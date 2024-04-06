@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ball Game</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    canvas {
+        background-color: black;
+    }
+
+    .score-container {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        font-size: 20px;
+    }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<button id="backButton" style="position: absolute; top: 20px; left: 20px;">Back</button>
+<div class="score-container">
+    <p>Score: <span id="score">0</span></p>
+    <p>Highscore: <span id="highscore">0</span></p>
+</div>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const ballRadius = 10;
+    let ballSpeed = 5; // Initial speed of the ball
+    const obstacleWidth = 20;
+    const obstacleHeight = 100;
+    const obstacleSpeed = 2; // Speed of obstacles
+
+    let ballX = canvas.width / 2;
+    let ballY = canvas.height / 2;
+    let mouseX = ballX;
+    let mouseY = ballY;
+    let obstacles = [];
+    let pickups = [];
+    let score = 0;
+    let highscore = 0;
+
+    function drawBall() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawObstacles() {
+        ctx.fillStyle = "red";
+        obstacles.forEach(obstacle => {
+            ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+        });
+    }
+
+    function moveObstacles() {
+        obstacles.forEach(obstacle => {
+            obstacle.x -= obstacleSpeed;
+            if (obstacle.x + obstacleWidth < 0) {
+                obstacle.x = canvas.width + Math.random() * 300;
+                obstacle.y = Math.random() * (canvas.height - obstacleHeight);
+            }
+        });
+    }
+
+    function drawPickups() {
+        ctx.fillStyle = "green";
+        pickups.forEach(pickup => {
+            ctx.beginPath();
+            ctx.arc(pickup.x, pickup.y, ballRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+        });
+    }
+
+    function movePickups() {
+        pickups.forEach(pickup => {
+            pickup.x -= obstacleSpeed; // Pickups move at the same speed as obstacles
+        });
+
+        // Generate new pickups if there are less than a certain number
+        while (pickups.length < 3) {
+            createPickup();
+        }
+    }
+
+    function checkCollision() {
+        obstacles.forEach(obstacle => {
+            if (ballX + ballRadius > obstacle.x && ballX - ballRadius < obstacle.x + obstacleWidth &&
+                ballY + ballRadius > obstacle.y && ballY - ballRadius < obstacle.y + obstacleHeight) {
+                gameOver();
+            }
+        });
+
+        pickups.forEach((pickup, index) => {
+            if (ballX + ballRadius > pickup.x && ballX - ballRadius < pickup.x &&
+                ballY + ballRadius > pickup.y && ballY - ballRadius < pickup.y) {
+                score += 10; // Increase score on pickup
+                ballSpeed += 0.5; // Increase ball speed on pickup
+                pickups.splice(index, 1); // Remove the pickup
+            }
+        });
+    }
+
+    function updateScore() {
+        document.getElementById("score").textContent = score;
+        document.getElementById("highscore").textContent = highscore;
+    }
+
+    function update() {
+        drawBall();
+        drawObstacles();
+        drawPickups();
+        moveObstacles();
+        movePickups();
+        checkCollision();
+        moveBall();
+        updateScore();
+        requestAnimationFrame(update);
+    }
+
+    function moveBall() {
+        // Calculate the distance between current ball position and mouse position
+        let dx = mouseX - ballX;
+        let dy = mouseY - ballY;
+
+        // Calculate the angle of movement
+        let angle = Math.atan2(dy, dx);
+
+        // Calculate the new position based on the angle and speed
+        let velocityX = Math.cos(angle) * ballSpeed;
+        let velocityY = Math.sin(angle) * ballSpeed;
+
+        // Move the ball
+        ballX += velocityX;
+        ballY += velocityY;
+
+        // Check if the ball hits the canvas boundaries
+        if (ballX + ballRadius > canvas.width) {
+            ballX = canvas.width - ballRadius;
+        }
+        if (ballX - ballRadius < 0) {
+            ballX = ballRadius;
+        }
+        if (ballY + ballRadius > canvas.height) {
+            ballY = canvas.height - ballRadius;
+        }
+        if (ballY - ballRadius < 0) {
+            ballY = ballRadius;
+        }
+    }
+
+    canvas.addEventListener("mousemove", function (event) {
+        mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    });
+
+    function createObstacle() {
+        let x = canvas.width + Math.random() * 300;
+        let y = Math.random() * (canvas.height - obstacleHeight);
+        obstacles.push({ x: x, y: y });
+    }
+
+    function createPickup() {
+        let x = canvas.width + Math.random() * 300;
+        let y = Math.random() * (canvas.height - ballRadius * 2);
+        pickups.push({ x: x, y: y });
+    }
+
+    function spawnObstacles() {
+        createObstacle();
+        setTimeout(spawnObstacles, 2000); // Adjust the spawn interval as needed
+    }
+
+    function spawnPickups() {
+        createPickup();
+        setTimeout(spawnPickups, 2000); // Adjust the spawn interval as needed
+    }
+
+    function gameOver() {
+        alert("Game Over! Your Score: " + score);
+        if (score > highscore) {
+            highscore = score;
+        }
+        score = 0;
+        ballSpeed = 5; // Reset speed
+        document.location.reload();
+    }
+
+    function backButtonClicked() {
+        // Implement the functionality to go back to the main menu or previous screen
+        // For now, let's just reload the page
+        window.history.back();
+    }
+
+    document.getElementById("backButton").addEventListener("click", backButtonClicked);
+
+    // Initial setup
+    for (let i = 0; i < 10; i++) {
+        createObstacle();
+    }
+    createPickup();
+    update();
+    spawnObstacles();
+    spawnPickups();
+</script>
+</body>
+</html>

@@ -14,7 +14,7 @@ COOLGAMES :
 3. [Sravan Chand](https://github.com/TH-Activities/saturday-hack-night-template)
    
 ## Link to product walkthrough
-[link to video](Link Here)
+[[link to video](https://drive.google.com/file/d/18i692rYnSal097wG4dbrwFIk-IqTHDoR/view?usp=drive_link)]
 
 ## How it Works ?
 The project functions as a centralized hub for a variety of mini-games, offering users an entertaining experience through a simple and intuitive interface. Upon accessing the website, users are greeted with a selection of games displayed on the homepage. They can choose a game by clicking on its respective link. Each game operates independently, featuring its own unique mechanics and challenges.

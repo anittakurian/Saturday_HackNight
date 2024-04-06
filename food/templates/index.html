@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'assets/styles.css' %}" type="text/css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 20%;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 50px;
+        }
+
+        .game-link {
+            display: inline-block;
+            margin: 0 20px;
+            text-decoration: none;
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+            background-color: rgba(255, 255, 255, 0.1); /* Slightly shaded */
+        }
+
+        .game-link:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.2); /* Darker shade on hover */
+            color: #fff;
+        }
+
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>COOLGAMES</h1>
+        <div >
+            <a href="/game" class="game-link">Tap Tap!</a>
+            <a href="/game2" class="game-link">Game 2</a>
+            <a href="/game3" class="game-link">Game 3</a>
+        </div>
+    </div>
+</body>
+</html>

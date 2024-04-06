@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+body {
+    background-color: black;
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-size: fill;
+    
+}
+
+
+.heading{
+    color: whitesmoke;
+    text-align: center;
+    font-size: 50px;
+    position: absolute;
+    top: 0;
+    text-shadow: chartreuse;
+}
+
+.gme{
+    text-indent: 50px;
+}

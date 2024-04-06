@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stick Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #home-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        #start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="home-container">
+        <h1>Welcome to Stick Game</h1>
+        <p>
+            Stick Game is a simple yet challenging game where you have to pick up sticks without disturbing the others. Test your hand-eye coordination and see how many sticks you can pick up!
+        </p>
+        <h2>How to Play:</h2>
+        <ol>
+            <li>Click the "Start Game" button below to begin.</li>
+            <li>Short sticks will fall from the top of the screen.</li>
+            <li>Click on the long stick at the bottom to pick up any short stick that touches it.</li>
+            <li>Try to pick up all the sticks without disturbing any others.</li>
+            <li>If you touch any other stick while picking up one, the game will be over.</li>
+        </ol>
+        <h2>History:</h2>
+        <p>
+            The Stick Game has been a popular pastime for generations, originating from ancient civilizations. It has evolved over time and remains a favorite among players of all ages.
+        </p>
+        <button id="start-button">Start Game</button>
+    </div>
+
+    <script>
+        document.getElementById("start-button").addEventListener("click", () => {
+            window.location.href = "/game6";
+        });
+    </script>
+</body>
+</html>

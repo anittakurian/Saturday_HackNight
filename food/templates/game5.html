@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Guessing Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #game-container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 3em;
+        }
+        p {
+            font-size: 2.5em;
+        }
+        input[type="text"] {
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Word Guessing Game</h1>
+        <p>Guess the word by entering one letter at a time:</p>
+        <p id="word"></p>
+        <p id="feedback"></p>
+        <input type="text" id="guessInput">
+        <button onclick="checkGuess()">Guess</button>
+        <button id="backButton" style="display: none;" onclick="goBack()">Back</button>
+    </div>
+
+    <script>
+        // Define an array of words to be guessed
+        var words = ["javascript", "python", "java", "ruby", "html", "css", "php", "swift", "csharp", "typescript"];
+        // Select a random word from the array
+        var wordToGuess = words[Math.floor(Math.random() * words.length)];
+        var guessedWord = "";
+
+        // Initialize guessedWord with dashes
+        for (var i = 0; i < wordToGuess.length; i++) {
+            guessedWord += "-";
+        }
+        document.getElementById("word").textContent = guessedWord;
+
+        function checkGuess() {
+            var guess = document.getElementById("guessInput").value.toLowerCase();
+            if (guess.length !== 1 || !(/[a-z]/.test(guess))) {
+                alert("Please enter a single letter.");
+                return;
+            }
+            if (guessedWord.includes(guess)) {
+                alert("You've already guessed this letter.");
+                return;
+            }
+            var newGuessedWord = "";
+            var correctGuess = false;
+            for (var i = 0; i < wordToGuess.length; i++) {
+                if (wordToGuess[i] === guess) {
+                    newGuessedWord += guess;
+                    correctGuess = true;
+                } else {
+                    newGuessedWord += guessedWord[i];
+                }
+            }
+            guessedWord = newGuessedWord;
+            document.getElementById("word").textContent = guessedWord;
+            document.getElementById("guessInput").value = "";
+            if (guessedWord === wordToGuess) {
+                document.getElementById("feedback").textContent = "Congratulations! You guessed the word!";
+                document.getElementById("backButton").style.display = "inline-block";
+            } else if (!correctGuess) {
+                document.getElementById("feedback").textContent = "Incorrect guess. Try again!";
+            } else {
+                document.getElementById("feedback").textContent = "";
+            }
+        }
+
+        function goBack() {
+            window.location.reload(); // Reload the page
+        }
+    </script>
+</body>
+</html>

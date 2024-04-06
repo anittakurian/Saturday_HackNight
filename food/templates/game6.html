@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stick Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        #game-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            margin: 20px auto;
+            border: 1px solid #000;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden; /* Ensure sticks fall only inside the box */
+        }
+        #long-stick {
+            position: absolute;
+            bottom: 10px;
+            left: 150px; /* Center long stick */
+            width: 100px;
+            height: 5px; /* Decrease thickness */
+            background-color: #333;
+            cursor: pointer;
+            z-index: 1; /* Ensure long stick is above short sticks */
+        }
+        .short-stick {
+            position: absolute;
+            width: 5px; /* Decrease thickness */
+            height: 15px; /* Decrease thickness */
+            background-color: #333;
+            border-radius: 2px;
+            z-index: 0; /* Ensure short sticks are behind long stick */
+            cursor: pointer;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        #start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #start-button:hover {
+            background-color: #45a049;
+        }
+        h1 {
+            color: #333;
+        }
+        #score {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            font-size: 20px;
+            text-align: left;
+            color: #333;
+            z-index: 2;
+            display: block; /* Make scorecard visible */
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Stick Game</h1>
+    <div id="game-container">
+        <div id="long-stick"></div>
+        <div id="score">Score: 0</div>
+    </div>
+    <p id="message"></p>
+
+    <script>
+        let gameStarted = false;
+        let gameOver = false;
+        let sticks = [];
+        let pickedSticks = 0;
+        let score = 0;
+
+        function startGame() {
+            resetGame(); // Reset the game before starting
+            if (!gameStarted) {
+                gameStarted = true;
+                document.getElementById("message").textContent = "";
+                document.querySelector("#long-stick").addEventListener("click", pickStick);
+                document.querySelector("#game-container").addEventListener("mousedown", startDrag);
+                document.querySelector("#game-container").addEventListener("mousemove", dragStick);
+                document.querySelector("#game-container").addEventListener("mouseup", dropStick);
+                setTimeout(dropSticks, 1000); // Drop sticks after 1 second
+            }
+        }
+
+        function resetGame() {
+            // Clear the game container
+            document.getElementById("game-container").innerHTML = '<div id="long-stick"></div><div id="score">Score: 0</div>';
+            // Reset variables
+            gameStarted = false;
+            gameOver = false;
+            sticks = [];
+            pickedSticks = 0;
+            score = 0;
+            // Reset UI
+            document.getElementById("score").textContent = "Score: 0";
+            document.getElementById("message").textContent = "";
+        }
+
+        function dropSticks() {
+            const longStickPos = parseInt(document.getElementById("long-stick").style.left);
+            for (let i = 0; i < 10; i++) { // Drop 10 sticks
+                const gameContainer = document.getElementById("game-container");
+                const stick = document.createElement("div");
+                stick.classList.add("short-stick");
+                const maxLeft = gameContainer.offsetWidth - 10; // Max left position for short sticks
+                stick.style.left = Math.floor(Math.random() * maxLeft) + "px"; // Random position within the max left
+                stick.style.top = "-30px"; // Start sticks above the game container
+                gameContainer.appendChild(stick);
+                sticks.push(stick);
+                animateStick(stick, longStickPos);
+            }
+        }
+
+        function animateStick(stick, longStickPos) {
+            let topPos = -30;
+            const interval = setInterval(() => {
+                topPos += 5;
+                if (topPos >= 470) { // If stick reaches near long stick's level
+                    const stickLeft = parseInt(stick.style.left);
+                    if (stickLeft >= longStickPos && stickLeft <= longStickPos + 100) { // Ensure stick stays within long stick's bounds
+                        stick.style.top = topPos + "px";
+                    }
+                } else {
+                    stick.style.top = topPos + "px";
+                }
+                if (topPos >= 500) { // If stick touches the bottom
+                    clearInterval(interval);
+                    if (!gameOver && !sticks.some(stick => stick.style.display !== "none")) {
+                        document.getElementById("message").textContent = "All sticks have fallen. Start picking them up!";
+                    }
+                }
+            }, 50);
+        }
+
+        function pickStick() {
+            if (!gameOver) {
+                const gameContainer = document.getElementById("game-container");
+                const longStickPos = parseInt(document.getElementById("long-stick").style.left);
+                sticks.forEach(stick => {
+                    if (Math.abs(parseInt(stick.style.left) + 5 - longStickPos - 50) <= 5) {
+                        stick.style.display = "none";
+                        pickedSticks++;
+                        if (!checkDisturbance()) {
+                            score++;
+                            document.getElementById("score").textContent = "Score: " + score;
+                        } else {
+                            gameOver = true;
+                            document.getElementById("message").textContent = "You disturbed other sticks. Game Over!";
+                        }
+                        if (pickedSticks === sticks.length) {
+                            document.getElementById("message").textContent = "You picked up all sticks!";
+                            gameOver = true;
+                        }
+                    }
+                });
+            }
+        }
+
+        function checkDisturbance() {
+            let disturbed = false;
+            sticks.forEach(stick => {
+                if (stick.style.display !== "none") {
+                    const stickRect = stick.getBoundingClientRect();
+                    sticks.forEach(otherStick => {
+                        if (otherStick !== stick && otherStick.style.display !== "none") {
+                            const otherStickRect = otherStick.getBoundingClientRect();
+                            if (doRectsOverlap(stickRect, otherStickRect)) {
+                                disturbed = true;
+                            }
+                        }
+                    });
+                }
+            });
+            return disturbed;
+        }
+
+        function doRectsOverlap(rect1, rect2) {
+            return !(rect1.right < rect2.left || 
+                     rect1.left > rect2.right || 
+                     rect1.bottom < rect2.top || 
+                     rect1.top > rect2.bottom);
+        }
+
+        let currentStick = null;
+        let startX = 0;
+        let startY = 0;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        function startDrag(event) {
+            if (event.target.classList.contains("short-stick")) {
+                currentStick = event.target;
+                startX = event.clientX;
+                startY = event.clientY;
+                offsetX = parseInt(currentStick.style.left);
+                offsetY = parseInt(currentStick.style.top);
+            }
+        }
+
+        function dragStick(event) {
+            if (currentStick !== null) {
+                const newLeft = offsetX + event.clientX - startX;
+                const newTop = offsetY + event.clientY - startY;
+                const gameContainer = document.getElementById("game-container");
+                const maxLeft = gameContainer.offsetWidth - 10;
+                const maxTop = gameContainer.offsetHeight - 30;
+                if (newLeft >= 0 && newLeft <= maxLeft && newTop >= 0 && newTop <= maxTop) {
+                    currentStick.style.left = newLeft + "px";
+                    currentStick.style.top = newTop + "px";
+                }
+            }
+        }
+
+        function dropStick() {
+            if (currentStick !== null) {
+                const gameContainer = document.getElementById("game-container");
+                const longStickPos = parseInt(document.getElementById("long-stick").style.left);
+                let validDrop = true;
+                sticks.forEach(stick => {
+                    if (stick !== currentStick) {
+                        const stickRect = stick.getBoundingClientRect();
+                        const currentStickRect = currentStick.getBoundingClientRect();
+                        if (doRectsOverlap(stickRect, currentStickRect)) {
+                            validDrop = false;
+                        }
+                    }
+                });
+                if (validDrop) {
+                    currentStick.style.display = "none";
+                    pickedSticks++;
+                    if (!checkDisturbance()) {
+                        score++;
+                        document.getElementById("score").textContent = "Score: " + score;
+                    } else {
+                        gameOver = true;
+                        document.getElementById("message").textContent = "You disturbed other sticks. Game Over!";
+                    }
+                    if (pickedSticks === sticks.length) {
+                        document.getElementById("message").textContent = "You picked up all sticks!";
+                        gameOver = true;
+                    }
+                } else {
+                    gameOver = true;
+                    document.getElementById("message").textContent = "You disturbed other sticks. Game Over!";
+                }
+                currentStick = null;
+            }
+        }
+    </script>
+    <button id="start-button" onclick="startGame()">Start Game</button>
+</body>
+</html>
